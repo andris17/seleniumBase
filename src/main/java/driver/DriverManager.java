@@ -29,12 +29,12 @@ public class DriverManager {
 
                 case CHROME: {
                     System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-                    driver = new ChromeDriver();
+                    driver = new ChromeDriver(BrowserOptions.getDefaultChromeOptions());
                     break;
                 }
                 case IE: {
                     System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
-                    driver = new InternetExplorerDriver();
+                    driver = new InternetExplorerDriver(BrowserOptions.getDefaultIEOptions());
                     break;
                 }
             }
