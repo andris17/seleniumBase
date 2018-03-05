@@ -50,6 +50,10 @@ public class DriverManager {
     }
 
     public static void destroyDriver() {
+        if (driver == null) {
+            return;
+        }
+
         driver.quit();
         driver = null;
     }
@@ -73,11 +77,11 @@ public class DriverManager {
         }
     }
 
-    public static void deleteCookie(String cookieName){
+    public static void deleteCookie(String cookieName) {
         driver.manage().deleteCookieNamed(cookieName);
     }
 
-    public static void deleteAllCookies(){
+    public static void deleteAllCookies() {
         driver.manage().deleteAllCookies();
     }
 
