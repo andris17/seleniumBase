@@ -25,7 +25,9 @@ public class DefaultTestRunner {
         System.out.println("Starting test suite...");
 
         DriverManager.setCloseBrowsers(true);
-        DriverManager.initDriver(BrowserType.CHROME);
+        DriverManager.setImplicitWaitSeconds(2);
+
+        DriverManager.initDriver(BrowserType.IE);
     }
 
     @AfterClass

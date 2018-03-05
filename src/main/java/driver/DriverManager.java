@@ -10,13 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 public class DriverManager {
 
-    private static final int DEFAULT_IMPLICIT_WAIT = 2;
+    private static int DEFAULT_IMPLICIT_WAIT = 2;
 
     private static WebDriver driver;
-
-
     private static boolean closeBrowsers = false;
-
 
     public static void initDriver(BrowserType browserType) {
         if (closeBrowsers) {
@@ -41,21 +38,18 @@ public class DriverManager {
 
             driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
             driver.manage().window().maximize();
-
         }
     }
 
-    public static WebDriver getDriver() {
-        return driver;
+    private static void isDriverPresent() {
+        if (driver == null) {
+            throw new IllegalStateException("Driver is not present, it should be initialized first!");
+        }
     }
 
     public static void destroyDriver() {
         driver.quit();
         driver = null;
-    }
-
-    public static int getImplicitWaitSeconds() {
-        return DEFAULT_IMPLICIT_WAIT;
     }
 
     public static void closeBrowsers(BrowserType browserType) {
@@ -80,6 +74,21 @@ public class DriverManager {
     /*
     Getters, Setters
      */
+
+    public static WebDriver getDriver() {
+        return driver;
+    }
+
+    public static int getImplicitWaitSeconds() {
+        return DEFAULT_IMPLICIT_WAIT;
+    }
+
+    public static void setImplicitWaitSeconds(int amount) {
+        isDriverPresent();
+
+        DEFAULT_IMPLICIT_WAIT = amount;
+        driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
+    }
 
     public static boolean isCloseBrowsers() {
         return closeBrowsers;
