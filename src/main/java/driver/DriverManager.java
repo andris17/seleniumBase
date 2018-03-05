@@ -38,6 +38,8 @@ public class DriverManager {
 
             driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
             driver.manage().window().maximize();
+
+            deleteAllCookies();
         }
     }
 
@@ -69,6 +71,14 @@ public class DriverManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void deleteCookie(String cookieName){
+        driver.manage().deleteCookieNamed(cookieName);
+    }
+
+    public static void deleteAllCookies(){
+        driver.manage().deleteAllCookies();
     }
 
     /*
