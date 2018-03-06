@@ -1,5 +1,6 @@
 package runners;
 
+import driver.DefaultEventListener;
 import driver.DriverManager;
 import enums.BrowserType;
 import org.junit.AfterClass;
@@ -25,9 +26,11 @@ public class DefaultTestRunner {
         System.out.println("Starting test suite...");
 
         DriverManager.setCloseBrowsers(true);
-        DriverManager.setImplicitWaitSeconds(2);
 
-        DriverManager.initDriver(BrowserType.IE);
+        DriverManager.initDriver(BrowserType.CHROME);
+
+        DriverManager.registerEventHandler(DefaultEventListener.getInstance());
+        DriverManager.setImplicitWaitSeconds(2);
     }
 
     @AfterClass

@@ -4,6 +4,8 @@ import enums.BrowserType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.openqa.selenium.support.events.WebDriverEventListener;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +15,8 @@ public class DriverManager {
     private static int DEFAULT_IMPLICIT_WAIT = 2;
 
     private static WebDriver driver;
+    private static EventFiringWebDriver driverWithEvents;
+
     private static boolean closeBrowsers = false;
 
     public static void initDriver(BrowserType browserType) {
@@ -85,11 +89,30 @@ public class DriverManager {
         driver.manage().deleteAllCookies();
     }
 
+    public static void registerEventHandler(WebDriverEventListener listener) {
+        isDriverPresent();
+
+        driverWithEvents = new EventFiringWebDriver(driver);
+        driverWithEvents.register(listener);
+    }
+
+    public static void unRegisterEventHandler() {
+        if (driverWithEvents != null) {
+            driverWithEvents.quit();
+        }
+    }
+    //TODO: event handlers
+    //TODO: screenshot
+    //TODO: remoteWebdriver
+
     /*
     Getters, Setters
      */
 
     public static WebDriver getDriver() {
+        if (driverWithEvents != null) {
+            return driverWithEvents;
+        }
         return driver;
     }
 
