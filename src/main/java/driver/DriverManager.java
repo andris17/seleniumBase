@@ -1,11 +1,15 @@
 package driver;
 
 import enums.BrowserType;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -101,9 +105,6 @@ public class DriverManager {
             driverWithEvents.quit();
         }
     }
-    //TODO: event handlers
-    //TODO: screenshot
-    //TODO: remoteWebdriver
 
     /*
     Getters, Setters
@@ -114,6 +115,19 @@ public class DriverManager {
             return driverWithEvents;
         }
         return driver;
+    }
+
+    private static FluentWait<WebDriver> getDefaultWait() {
+        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(DriverManager.getDriver())
+                .withTimeout(3, TimeUnit.SECONDS)
+                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                .ignoring(StaleElementReferenceException.class);
+
+        return wait;
+    }
+
+    public static WebElement getElement(By locator) {
+        return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
     }
 
     public static int getImplicitWaitSeconds() {
