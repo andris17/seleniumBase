@@ -1,6 +1,7 @@
 package driver;
 
 import enums.BrowserType;
+import enums.ScreenshotMode;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -12,6 +13,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DriverManager {
@@ -22,6 +24,7 @@ public class DriverManager {
     private static EventFiringWebDriver driverWithEvents;
 
     private static boolean closeBrowsers = false;
+    private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
 
     public static void initDriver(BrowserType browserType) {
         if (closeBrowsers) {
@@ -117,17 +120,20 @@ public class DriverManager {
         return driver;
     }
 
-    private static FluentWait<WebDriver> getDefaultWait() {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(DriverManager.getDriver())
+    protected static FluentWait<WebDriver> getDefaultWait() {
+        return new FluentWait<WebDriver>(DriverManager.getDriver())
                 .withTimeout(3, TimeUnit.SECONDS)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .ignoring(StaleElementReferenceException.class);
 
-        return wait;
     }
 
     public static WebElement getElement(By locator) {
         return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
+    }
+
+    public static List<WebElement> getElements(By locator) {
+        return getDriver().findElements(locator);
     }
 
     public static int getImplicitWaitSeconds() {
@@ -141,11 +147,29 @@ public class DriverManager {
         driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
     }
 
+    public static void setScreenshotMode(ScreenshotMode mode) {
+        screenshotMode = mode;
+    }
+
+    public static ScreenshotMode getScreenshotMode() {
+        return screenshotMode;
+    }
+
     public static boolean isCloseBrowsers() {
         return closeBrowsers;
     }
 
     public static void setCloseBrowsers(boolean closeBrowsers) {
         DriverManager.closeBrowsers = closeBrowsers;
+    }
+
+    /* Browser information */
+
+    public static String getUrl() {
+        return getDriver().getCurrentUrl();
+    }
+
+    public static String getTitle() {
+        return getDriver().getTitle();
     }
 }
