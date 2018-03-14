@@ -109,7 +109,12 @@ public class DriverMethods {
     }
 
     public static void setText(By locator, String input) {
+        clear(locator);
         getElement(locator).sendKeys(input);
+    }
+
+    public static void clear(By locator){
+        getElement(locator).clear();
     }
 
     public static void selectItemFromDropdown(By locator, String itemText) {
