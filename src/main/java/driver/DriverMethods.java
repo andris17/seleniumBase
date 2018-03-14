@@ -165,6 +165,25 @@ public class DriverMethods {
         return getElement(locator).getText();
     }
 
+    /* Element status */
+
+    public static boolean isDisplayed(By locator) {
+        return getElement(locator).isDisplayed();
+    }
+
+    public static boolean isEnabled(By locator) {
+        return getElement(locator).isEnabled();
+    }
+
+    public static boolean isPresent(By locator) {
+        try {
+            getElement(locator);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
     public static void acceptAlert() {
         getDriver().switchTo().alert().accept();
         getDriver().switchTo().defaultContent();
