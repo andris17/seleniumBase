@@ -10,6 +10,7 @@ import org.openqa.selenium.interactions.internal.Locatable;
 import org.openqa.selenium.support.ui.Select;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
+
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -113,8 +114,15 @@ public class DriverMethods {
         getElement(locator).sendKeys(input);
     }
 
-    public static void clear(By locator){
+    public static void clear(By locator) {
         getElement(locator).clear();
+    }
+
+    public static void setCheckboxStatus(By locator, boolean status) {
+        WebElement checkbox = getElement(locator);
+        if (status != checkbox.isSelected()) {
+            checkbox.click();
+        }
     }
 
     public static void selectItemFromDropdown(By locator, String itemText) {
