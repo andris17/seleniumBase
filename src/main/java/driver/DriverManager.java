@@ -2,10 +2,7 @@ package driver;
 
 import enums.BrowserType;
 import enums.ScreenshotMode;
-import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -109,9 +106,7 @@ public class DriverManager {
         }
     }
 
-    /*
-    Getters, Setters
-     */
+    /* Getters, Setters */
 
     public static WebDriver getDriver() {
         if (driverWithEvents != null) {
@@ -121,15 +116,19 @@ public class DriverManager {
     }
 
     protected static FluentWait<WebDriver> getDefaultWait() {
-        return new FluentWait<WebDriver>(DriverManager.getDriver())
+        return new FluentWait<WebDriver>(getDriver())
                 .withTimeout(3, TimeUnit.SECONDS)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .ignoring(StaleElementReferenceException.class);
 
     }
 
-    public static WebElement getElement(By locator) {
-        return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
+    public static WebElement getElement(By locator) throws NoSuchElementException {
+        try {
+            return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Element is not found with locator: "+locator.toString());
+        }
     }
 
     public static List<WebElement> getElements(By locator) {
@@ -159,8 +158,8 @@ public class DriverManager {
         return closeBrowsers;
     }
 
-    public static void setCloseBrowsers(boolean closeBrowsers) {
-        DriverManager.closeBrowsers = closeBrowsers;
+    public static void setCloseBrowsers(boolean status) {
+        closeBrowsers = status;
     }
 
     /* Browser information */
