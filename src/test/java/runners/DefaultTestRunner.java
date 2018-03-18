@@ -14,7 +14,7 @@ import cucumber.api.junit.Cucumber;
 @CucumberOptions(
         tags = {"@Test"},
         strict = true,
-        glue = "stepdefs",
+        glue = "steps",
         monochrome = true,
         plugin = {"pretty", "json:jsonoutput.json"},
         features = "src/test/resources/features")
