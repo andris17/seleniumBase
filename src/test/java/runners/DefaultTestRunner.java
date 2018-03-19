@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
+import utils.Log4jUtils;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
@@ -24,10 +25,19 @@ public class DefaultTestRunner {
     @BeforeClass
     public static void beforeClass() {
         System.out.println("Starting test suite...");
+        System.setProperty("log4j.configurationFile", "src\\main\\resources\\log4j2.properties.xml");
 
-        DriverManager.setCloseBrowsers(true);
+        DriverManager.setCloseBrowsers(false);
 
         DriverManager.initDriver(BrowserType.CHROME);
+
+        if (System.getProperty("logLevel") != null) {
+            Log4jUtils.setRootLevel(System.getProperty("logLevel"));
+        }
+
+        if (System.getProperty("classLogLevel") != null && System.getProperty("classLogName") != null) {
+            Log4jUtils.setLevel(System.getProperty("classLogName"), System.getProperty("classLogLevel"));
+        }
 
         DriverManager.registerEventHandler(DefaultEventListener.getInstance());
         DriverManager.setImplicitWaitSeconds(2);
