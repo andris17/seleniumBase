@@ -1,15 +1,19 @@
 package driver;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 
+
 public class DefaultEventListener implements WebDriverEventListener {
     private static DefaultEventListener instance = null;
+    private static Logger logger = null;
 
     private DefaultEventListener() {
-
+        logger = LogManager.getLogger(this.getClass());
     }
 
     public static DefaultEventListener getInstance() {
@@ -82,7 +86,7 @@ public class DefaultEventListener implements WebDriverEventListener {
 
     @Override
     public void beforeFindBy(By by, WebElement webElement, WebDriver webDriver) {
-
+        logger.info(String.format("Locating element: %s", by.toString()));
     }
 
     @Override
