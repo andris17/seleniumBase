@@ -2,12 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>seleniumBase</groupId>
-    <artifactId>seleniumBase</artifactId>
+    <groupId>Ghost</groupId>
+    <artifactId>SeleniumBase</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>seleniumBase</name>
+    <name>SeleniumBase</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -15,7 +15,6 @@
         <failsafe.plugin.version>2.20.1</failsafe.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <cucumber.version>1.2.5</cucumber.version>
-        <junit.version>4.12</junit.version>
         <log4j.version>2.11.0</log4j.version>
     </properties>
     <build>
@@ -35,37 +34,7 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>defaultTestRunner</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${failsafe.plugin.version}</version>
-                        <configuration>
-                            <includes>
-                                <include>**/DefaultTestRunner.java</include>
-                            </includes>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -74,21 +43,6 @@
         <dependency>
             <groupId>info.cukes</groupId>
             <artifactId>cucumber-core</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-picocontainer</artifactId>
             <version>${cucumber.version}</version>
         </dependency>
         <dependency>
