@@ -31,7 +31,7 @@ import static driver.DriverManager.getElement;
 public class DriverMethods {
     /**
      * Navigates to the specified url.
-     * @param url the url to neavigate to
+     * @param url the url to navigate to
      */
     public static void navigate(String url) {
         getDriver().navigate().to(url);
@@ -89,7 +89,7 @@ public class DriverMethods {
      */
     public static String getNewestWindowTitle(Set<String> oldWindows, Set<String> newWindows) {
         for (String title : newWindows) {
-            if (!newWindows.contains(title)) {
+            if (!oldWindows.contains(title)) {
                 return title;
             }
         }
@@ -335,7 +335,7 @@ public class DriverMethods {
      */
     public static byte[] takeScreenShot() throws IOException {
         ByteArrayOutputStream screenshot = new ByteArrayOutputStream();
-        ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportRetina(100, 0, 0, 2)).takeScreenshot(getDriver()).getImage(), "png", screenshot);
+        ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportNonRetina(100, 0, 0)).takeScreenshot(getDriver()).getImage(), "png", screenshot);
 
         screenshot.flush();
 
@@ -381,7 +381,7 @@ public class DriverMethods {
         }
     }
 
-    public static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {
+    private static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {
         scenario.embed(screenshot, "image/png");
     }
 
