@@ -381,7 +381,7 @@ public class DriverMethods {
         }
     }
 
-    public static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {
+    private static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {
         scenario.embed(screenshot, "image/png");
     }
 
