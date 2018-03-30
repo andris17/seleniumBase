@@ -21,15 +21,34 @@ import java.util.Set;
 import static driver.DriverManager.getDriver;
 import static driver.DriverManager.getElement;
 
+/**
+ * DriverManager class is responsible for handling the WebDriver during the test run.<br>
+ * This class encapsulates the WebDriver API from above layers in the test framework.<br>
+ * All interaction with the WebDriver API should happen through methods in this class.
+ *
+ * @author Andras Fuge
+ */
 public class DriverMethods {
+    /**
+     * Navigates to the specified url.
+     * @param url the url to neavigate to
+     */
     public static void navigate(String url) {
         getDriver().navigate().to(url);
     }
 
+    /**
+     * Refreshes the active page.
+     */
     public static void refresh() {
         getDriver().navigate().refresh();
     }
 
+    /**
+     * Switches the active window to the specified browser tab.
+     * @param windowTitle the title of the tab to switch to
+     * @throws NoSuchWindowException when the tab is not found
+     */
     public static void switchToTab(String windowTitle) throws NoSuchWindowException {
         Set<String> windows = getDriver().getWindowHandles();
 
@@ -43,6 +62,9 @@ public class DriverMethods {
         throw new NoSuchWindowException(String.format("No window found with title: [%s]", windowTitle));
     }
 
+    /**
+     * Creates and switches to a new browser tab.
+     */
     public static void openNewTab() {
         Set<String> oldWindows = getDriver().getWindowHandles();
 
@@ -52,10 +74,19 @@ public class DriverMethods {
         switchToTab(getNewestWindowTitle(oldWindows, newWindows));
     }
 
+    /**
+     * Closes the active browser tab.
+     */
     public static void closeCurrentTab() {
         getDriver().close();
     }
 
+    /**
+     * Provides the last opened browser tab based on the difference of two sets of tabs.
+     * @param oldWindows first list of browser tabs
+     * @param newWindows first list of browser tabs
+     * @return first tab not in the intersection of the two sets
+     */
     public static String getNewestWindowTitle(Set<String> oldWindows, Set<String> newWindows) {
         for (String title : newWindows) {
             if (!newWindows.contains(title)) {
@@ -66,14 +97,28 @@ public class DriverMethods {
         return null;
     }
 
+    /**
+     * Switches the WebDriver context to the specified frame.
+     * @param locator By locator of the frame to switch to
+     */
     public static void setFrame(By locator) {
         getDriver().switchTo().defaultContent().switchTo().frame(getElement(locator));
     }
 
+    /**
+     * Clicks on the specified element.
+     * @param locator By locator of the element to click on
+     */
     public static void clickElement(By locator) {
         DriverManager.getElement(locator).click();
     }
 
+    /**
+     * Executes the specified mouse action.
+     * @param locator By locator of the element to execute the action on.
+     * @param event the specified mouse action of the type MouseEvent
+     * @see MouseEvent
+     */
     public static void mouseAction(By locator, MouseEvent event) {
         Mouse mouse = ((HasInputDevices) getDriver()).getMouse();
         Actions actions = new Actions(getDriver());
@@ -105,19 +150,38 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Sends a specified key to the element.
+     * @param locator By locator of the element
+     * @param key the specified key of type Keys
+     */
     public static void sendKey(By locator, Keys key) {
         getElement(locator).sendKeys(key);
     }
 
+    /**
+     * Clears and sets the text of an element.
+     * @param locator By locator of the element
+     * @param input the specified text input
+     */
     public static void setText(By locator, String input) {
         clear(locator);
         getElement(locator).sendKeys(input);
     }
 
+    /**
+     * Clears the content of an element.
+     * @param locator By locator of the element
+     */
     public static void clear(By locator) {
         getElement(locator).clear();
     }
 
+    /**
+     * Sets the status of a checkbox.
+     * @param locator By locator of the element
+     * @param status status to be set
+     */
     public static void setCheckboxStatus(By locator, boolean status) {
         WebElement checkbox = getElement(locator);
         if (status != checkbox.isSelected()) {
@@ -125,6 +189,11 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Selects an item from the dropdown options by its text.
+     * @param locator By locator of the dropdown
+     * @param itemText text of the item to be selected
+     */
     public static void selectItemFromDropdown(By locator, String itemText) {
         try {
             Select select = new Select(getElement(locator));
@@ -134,6 +203,11 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Selects an item from the dropdown options by its order number.
+     * @param locator By locator of the dropdown
+     * @param itemOrder order number of the item to be selected
+     */
     public static void selectItemFromDropdown(By locator, int itemOrder) {
         try {
             Select select = new Select(getElement(locator));
@@ -143,6 +217,11 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Selects an item from the dropdown options by its value.
+     * @param locator By locator of the dropdown
+     * @param value value of the item to be selected
+     */
     public static void selectValueFromDropdown(By locator, String value) {
         try {
             Select select = new Select(getElement(locator));
@@ -152,12 +231,22 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Returns the selected option's text of the specified dropdown.
+     * @param locator By locator of the dropdown
+     * @return text of the selected option
+     */
     public static String getSelectedOption(By locator) {
         Select select = new Select(getElement(locator));
 
         return select.getFirstSelectedOption().getText();
     }
 
+    /**
+     * Returns all options of the specified dropdown
+     * @param locator By locator of the dropdown
+     * @return the list of option texts
+     */
     public static List<String> getOptions(By locator) {
         Select select = new Select(getElement(locator));
         List<WebElement> elements = select.getOptions();
@@ -170,24 +259,50 @@ public class DriverMethods {
         return options;
     }
 
+    /**
+     * Returns the specified attribute of an element.
+     * @param locator By locator of the element
+     * @param attribute the attribute to be returned
+     * @return value of the element's attribute
+     */
     public static String getAttribute(By locator, String attribute) {
         return getElement(locator).getAttribute(attribute);
     }
 
+    /**
+     * Returns the text of an element.
+     * @param locator By locator of the element
+     * @return text of the element
+     */
     public static String getText(By locator) {
         return getElement(locator).getText();
     }
 
     /* Element status */
 
+    /**
+     * Returns the display status of an element.
+     * @param locator By locator of the element
+     * @return boolean value of the display status
+     */
     public static boolean isDisplayed(By locator) {
         return getElement(locator).isDisplayed();
     }
 
+    /**
+     * Returns the enabled status of an element.
+     * @param locator By locator of the element
+     * @return boolean value of the enabled status
+     */
     public static boolean isEnabled(By locator) {
         return getElement(locator).isEnabled();
     }
 
+    /**
+     * Returns the presence status of an element.
+     * @param locator By locator of the element
+     * @return boolean value of the presence status
+     */
     public static boolean isPresent(By locator) {
         try {
             getElement(locator);
@@ -197,16 +312,27 @@ public class DriverMethods {
         }
     }
 
+    /**
+     * Accepts a standard browser alert.
+     */
     public static void acceptAlert() {
         getDriver().switchTo().alert().accept();
         getDriver().switchTo().defaultContent();
     }
 
+    /**
+     * Dismisses a standard browser alert
+     */
     public static void dismissAlert() {
         getDriver().switchTo().alert().dismiss();
         getDriver().switchTo().defaultContent();
     }
 
+    /**
+     * Captures screenshot of the page. The default capture area is the entire page.
+     * @return the screenshot image as a byte array
+     * @throws IOException when the output image cannot be created
+     */
     public static byte[] takeScreenShot() throws IOException {
         ByteArrayOutputStream screenshot = new ByteArrayOutputStream();
         ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportRetina(100, 0, 0, 2)).takeScreenshot(getDriver()).getImage(), "png", screenshot);
@@ -216,6 +342,12 @@ public class DriverMethods {
         return screenshot.toByteArray();
     }
 
+    /**
+     * Captures screenshot of a specified element.
+     * @param locator By locator of the element
+     * @return the screenshot as a byte array
+     * @throws IOException when the output image cannot be created
+     */
     public static byte[] takeScreenShotOfElement(By locator) throws IOException {
         ByteArrayOutputStream screenshot = new ByteArrayOutputStream();
         ImageIO.write(new AShot().takeScreenshot(getDriver(), getElement(locator)).getImage(), "png", screenshot);
@@ -225,6 +357,11 @@ public class DriverMethods {
         return screenshot.toByteArray();
     }
 
+    /**
+     * Attaches the screenshot to a Cucumber scenario.
+     * @param scenario the specified scenario to get extended with screenshot
+     * @param screenshot the image to attach
+     */
     public static void addScreenshotToScenario(Scenario scenario, byte[] screenshot) {
         switch (DriverManager.getScreenshotMode()) {
             case FAILED:
@@ -248,6 +385,12 @@ public class DriverMethods {
         scenario.embed(screenshot, "image/png");
     }
 
+    /**
+     * Executes a specified Javascript script in the browser.
+     * @param script script to be executed
+     * @param args script arguments
+     * @return return value of the Javascript command
+     */
     public static Object executeJavaScript(String script, Object... args) {
         JavascriptExecutor executor;
         if (getDriver() instanceof JavascriptExecutor) {

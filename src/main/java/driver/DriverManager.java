@@ -13,6 +13,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Responsible for handling the WebDriver during the test run.<br>
+ * This class instantiates the driver as a singleton object.<br>
+ * Access to the driver can only happen via the getDriver() method.
+ *
+ * @author Andras Fuge
+ */
 public class DriverManager {
 
     private static int DEFAULT_IMPLICIT_WAIT = 2;
@@ -23,6 +30,10 @@ public class DriverManager {
     private static boolean closeBrowsers = false;
     private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
 
+    /**
+     * Instantiates singleton WebDriver for the specified browser type.
+     * @param browserType   the browser type to be initialized
+     */
     public static void initDriver(BrowserType browserType) {
         if (closeBrowsers) {
             closeBrowsers(browserType);
@@ -57,6 +68,9 @@ public class DriverManager {
         }
     }
 
+    /**
+     * Clean-up method for quitting the running WebDriver instance.
+     */
     public static void destroyDriver() {
         if (driver == null) {
             return;
@@ -66,6 +80,10 @@ public class DriverManager {
         driver = null;
     }
 
+    /**
+     * Closes all running browser instances of the type of specified browser.
+     * @param browserType the browser type to be closed
+     */
     public static void closeBrowsers(BrowserType browserType) {
         try {
             switch (browserType) {
@@ -85,14 +103,25 @@ public class DriverManager {
         }
     }
 
+    /**
+     * Deletes one specified cookie element from client side.
+     * @param cookieName the name of the cookie to be deleted
+     */
     public static void deleteCookie(String cookieName) {
         driver.manage().deleteCookieNamed(cookieName);
     }
 
+    /**
+     * Deletes all client-side cookies.
+     */
     public static void deleteAllCookies() {
         driver.manage().deleteAllCookies();
     }
 
+    /**
+     * Register specifies event listener to the driver.
+     * @param listener an instance of the listener class
+     */
     public static void registerEventHandler(WebDriverEventListener listener) {
         isDriverPresent();
 
@@ -100,14 +129,20 @@ public class DriverManager {
         driverWithEvents.register(listener);
     }
 
+    /**
+     * Un-register specifies event listener to the driver.
+     */
     public static void unRegisterEventHandler() {
         if (driverWithEvents != null) {
             driverWithEvents.quit();
         }
     }
 
-    /* Getters, Setters */
-
+    /**
+     * Provides the singleton WebDriver object to the consumers.
+     *
+     * @return the active WebDriver instance
+     */
     public static WebDriver getDriver() {
         if (driverWithEvents != null) {
             return driverWithEvents;
@@ -115,6 +150,10 @@ public class DriverManager {
         return driver;
     }
 
+    /**
+     * Provides default framework wait to consumers.
+     * @return FluentWait with default parameters
+     */
     protected static FluentWait<WebDriver> getDefaultWait() {
         return new FluentWait<WebDriver>(getDriver())
                 .withTimeout(3, TimeUnit.SECONDS)
@@ -123,6 +162,12 @@ public class DriverManager {
 
     }
 
+    /**
+     * Returns a particular WebElement for the specified locator.
+     * @param locator the By locator of the element
+     * @return the located WebElement
+     * @throws NoSuchElementException when the element is not found
+     */
     public static WebElement getElement(By locator) throws NoSuchElementException {
         try {
             return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
@@ -131,6 +176,11 @@ public class DriverManager {
         }
     }
 
+    /**
+     * Returns all matching WebElements for the specified locator.
+     * @param locator the By locator of the element
+     * @return the located WebElements
+     */
     public static List<WebElement> getElements(By locator) {
         return getDriver().findElements(locator);
     }
@@ -161,8 +211,6 @@ public class DriverManager {
     public static void setCloseBrowsers(boolean status) {
         closeBrowsers = status;
     }
-
-    /* Browser information */
 
     public static String getUrl() {
         return getDriver().getCurrentUrl();

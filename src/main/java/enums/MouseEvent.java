@@ -1,5 +1,10 @@
 package enums;
 
+/**
+ * Enum class listing supported mouse events.
+ *
+ * @author Andras Fuge
+ */
 public enum MouseEvent {
     CLICK,
     DOUBLE_CLICK,

@@ -7,8 +7,18 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Responsible for providing the default browser settings.
+ *
+ * @author Andras Fuge
+ */
 class BrowserOptions {
 
+    /**
+     * Returns default Chrome browser options
+     * <p>
+     * @return ChromeOptions
+     */
     static ChromeOptions getDefaultChromeOptions(){
         ChromeOptions options = new ChromeOptions();
 
@@ -23,6 +33,11 @@ class BrowserOptions {
         return options;
     }
 
+    /**
+     * Returns default Internet Explorer browser options
+     * <p>
+     * @return InternetExplorerOptions
+     */
     static InternetExplorerOptions getDefaultIEOptions(){
         InternetExplorerOptions options = new InternetExplorerOptions();
 

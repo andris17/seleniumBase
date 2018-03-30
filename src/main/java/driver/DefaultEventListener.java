@@ -8,6 +8,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 
 
+/**
+ * Responsible for handling event listeners occured during test run.<br>
+ * Possible usages: additional logging information, extended waiting mechanism
+ *
+ * @author Andras Fuge
+ */
 public class DefaultEventListener implements WebDriverEventListener {
     private static DefaultEventListener instance = null;
     private static Logger logger = null;

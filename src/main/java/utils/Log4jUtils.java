@@ -3,6 +3,11 @@ package utils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
+/**
+ * Util class managing the log4j logger instance.
+ *
+ * @author Andras Fuge
+ */
 public class Log4jUtils {
     public Log4jUtils() {
     }

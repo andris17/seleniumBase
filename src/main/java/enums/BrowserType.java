@@ -1,7 +1,9 @@
 package enums;
 
-/*
-    Enum class referring to supported browser types.
+/**
+ * Enum class listing supported browser types.
+ *
+ * @author Andras Fuge
  */
 public enum BrowserType {
     IE, CHROME
