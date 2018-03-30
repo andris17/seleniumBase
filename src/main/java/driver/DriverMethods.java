@@ -335,7 +335,7 @@ public class DriverMethods {
      */
     public static byte[] takeScreenShot() throws IOException {
         ByteArrayOutputStream screenshot = new ByteArrayOutputStream();
-        ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportRetina(100, 0, 0, 2)).takeScreenshot(getDriver()).getImage(), "png", screenshot);
+        ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportNonRetina(100, 0, 0)).takeScreenshot(getDriver()).getImage(), "png", screenshot);
 
         screenshot.flush();
 
