@@ -31,7 +31,7 @@ import static driver.DriverManager.getElement;
 public class DriverMethods {
     /**
      * Navigates to the specified url.
-     * @param url the url to neavigate to
+     * @param url the url to navigate to
      */
     public static void navigate(String url) {
         getDriver().navigate().to(url);
