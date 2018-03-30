@@ -89,7 +89,7 @@ public class DriverMethods {
      */
     public static String getNewestWindowTitle(Set<String> oldWindows, Set<String> newWindows) {
         for (String title : newWindows) {
-            if (!newWindows.contains(title)) {
+            if (!oldWindows.contains(title)) {
                 return title;
             }
         }
