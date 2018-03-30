@@ -62,7 +62,11 @@ public class DriverManager {
         }
     }
 
-    private static void isDriverPresent() {
+    /**
+     * Stops execution with an exception if called and driver is not yet initialized.
+     * @throws IllegalStateException
+     */
+    private static void whenDriverPresent() throws IllegalStateException {
         if (driver == null) {
             throw new IllegalStateException("Driver is not present, it should be initialized first!");
         }
@@ -123,7 +127,7 @@ public class DriverManager {
      * @param listener an instance of the listener class
      */
     public static void registerEventHandler(WebDriverEventListener listener) {
-        isDriverPresent();
+        whenDriverPresent();
 
         driverWithEvents = new EventFiringWebDriver(driver);
         driverWithEvents.register(listener);
@@ -190,7 +194,7 @@ public class DriverManager {
     }
 
     public static void setImplicitWaitSeconds(int amount) {
-        isDriverPresent();
+        whenDriverPresent();
 
         DEFAULT_IMPLICIT_WAIT = amount;
         driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
