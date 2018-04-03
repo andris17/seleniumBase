@@ -7,11 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,26 +40,26 @@ public class DriverManager {
      * Instantiates singleton WebDriver for the specified browser type.
      *
      * @param browserType the browser type to be initialized
+     * @param gridHubUrl  the address of the selenium grid hub
      */
-    public static void initDriver(BrowserType browserType) {
+    public static void initDriver(BrowserType browserType, String... gridHubUrl) {
+        System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
+        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
+
         if (closeBrowsers) {
             closeBrowsers(browserType);
         }
 
         if (driver == null) {
-
-            switch (browserType) {
-
-                case CHROME: {
-                    System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-                    driver = new ChromeDriver(BrowserOptions.getDefaultChromeOptions());
-                    break;
+            if (gridHubUrl.length > 0) {
+                try {
+                    initRemoteDriver(browserType, gridHubUrl[0]);
+                } catch (MalformedURLException e) {
+                    logger.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
+                    System.exit(1);
                 }
-                case IE: {
-                    System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
-                    driver = new InternetExplorerDriver(BrowserOptions.getDefaultIEOptions());
-                    break;
-                }
+            } else {
+                initLocalDriver(browserType);
             }
 
             driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
@@ -66,10 +69,40 @@ public class DriverManager {
         }
     }
 
+    private static void initLocalDriver(BrowserType browserType) {
+        if (driver == null) {
+            switch (browserType) {
+                case CHROME: {
+                    driver = new ChromeDriver(BrowserOptions.getDefaultChromeOptions());
+                    break;
+                }
+                case IE: {
+                    driver = new InternetExplorerDriver(BrowserOptions.getDefaultIEOptions());
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
+        if (driver == null) {
+            switch (browserType) {
+                case CHROME: {
+                    driver = new RemoteWebDriver(new URL(gridHubUrl), BrowserOptions.getDefaultChromeOptions());
+                    break;
+                }
+                case IE: {
+                    driver = new RemoteWebDriver(new URL(gridHubUrl), BrowserOptions.getDefaultIEOptions());
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * Stops execution with an exception if called and driver is not yet initialized.
      *
-     * @throws IllegalStateException
+     * @throws IllegalStateException thrown when driver is not initialized
      */
     private static void whenDriverPresent() throws IllegalStateException {
         if (driver == null) {
@@ -169,7 +202,7 @@ public class DriverManager {
      * @return FluentWait with default parameters
      */
     protected static FluentWait<WebDriver> getDefaultWait() {
-        return new FluentWait<WebDriver>(getDriver())
+        return new FluentWait<>(getDriver())
                 .withTimeout(3, TimeUnit.SECONDS)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .ignoring(StaleElementReferenceException.class);
