@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import static driver.DriverManager.getDriver;
 import static driver.DriverManager.getElement;
 
@@ -29,8 +32,12 @@ import static driver.DriverManager.getElement;
  * @author Andras Fuge
  */
 public class DriverMethods {
+
+    private static Logger logger = LogManager.getLogger(DriverMethods.class);
+
     /**
      * Navigates to the specified url.
+     *
      * @param url the url to navigate to
      */
     public static void navigate(String url) {
@@ -46,6 +53,7 @@ public class DriverMethods {
 
     /**
      * Switches the active window to the specified browser tab.
+     *
      * @param windowTitle the title of the tab to switch to
      * @throws NoSuchWindowException when the tab is not found
      */
@@ -59,7 +67,9 @@ public class DriverMethods {
             }
         }
 
-        throw new NoSuchWindowException(String.format("No window found with title: [%s]", windowTitle));
+        String errorMessage = String.format("No window found with title: [%s]", windowTitle);
+        logger.error(errorMessage);
+        throw new NoSuchWindowException(errorMessage);
     }
 
     /**
@@ -83,6 +93,7 @@ public class DriverMethods {
 
     /**
      * Provides the last opened browser tab based on the difference of two sets of tabs.
+     *
      * @param oldWindows first list of browser tabs
      * @param newWindows first list of browser tabs
      * @return first tab not in the intersection of the two sets
@@ -99,6 +110,7 @@ public class DriverMethods {
 
     /**
      * Switches the WebDriver context to the specified frame.
+     *
      * @param locator By locator of the frame to switch to
      */
     public static void setFrame(By locator) {
@@ -107,6 +119,7 @@ public class DriverMethods {
 
     /**
      * Clicks on the specified element.
+     *
      * @param locator By locator of the element to click on
      */
     public static void clickElement(By locator) {
@@ -115,8 +128,9 @@ public class DriverMethods {
 
     /**
      * Executes the specified mouse action.
+     *
      * @param locator By locator of the element to execute the action on.
-     * @param event the specified mouse action of the type MouseEvent
+     * @param event   the specified mouse action of the type MouseEvent
      * @see MouseEvent
      */
     public static void mouseAction(By locator, MouseEvent event) {
@@ -152,8 +166,9 @@ public class DriverMethods {
 
     /**
      * Sends a specified key to the element.
+     *
      * @param locator By locator of the element
-     * @param key the specified key of type Keys
+     * @param key     the specified key of type Keys
      */
     public static void sendKey(By locator, Keys key) {
         getElement(locator).sendKeys(key);
@@ -161,8 +176,9 @@ public class DriverMethods {
 
     /**
      * Clears and sets the text of an element.
+     *
      * @param locator By locator of the element
-     * @param input the specified text input
+     * @param input   the specified text input
      */
     public static void setText(By locator, String input) {
         clear(locator);
@@ -171,6 +187,7 @@ public class DriverMethods {
 
     /**
      * Clears the content of an element.
+     *
      * @param locator By locator of the element
      */
     public static void clear(By locator) {
@@ -179,8 +196,9 @@ public class DriverMethods {
 
     /**
      * Sets the status of a checkbox.
+     *
      * @param locator By locator of the element
-     * @param status status to be set
+     * @param status  status to be set
      */
     public static void setCheckboxStatus(By locator, boolean status) {
         WebElement checkbox = getElement(locator);
@@ -191,7 +209,8 @@ public class DriverMethods {
 
     /**
      * Selects an item from the dropdown options by its text.
-     * @param locator By locator of the dropdown
+     *
+     * @param locator  By locator of the dropdown
      * @param itemText text of the item to be selected
      */
     public static void selectItemFromDropdown(By locator, String itemText) {
@@ -205,7 +224,8 @@ public class DriverMethods {
 
     /**
      * Selects an item from the dropdown options by its order number.
-     * @param locator By locator of the dropdown
+     *
+     * @param locator   By locator of the dropdown
      * @param itemOrder order number of the item to be selected
      */
     public static void selectItemFromDropdown(By locator, int itemOrder) {
@@ -219,8 +239,9 @@ public class DriverMethods {
 
     /**
      * Selects an item from the dropdown options by its value.
+     *
      * @param locator By locator of the dropdown
-     * @param value value of the item to be selected
+     * @param value   value of the item to be selected
      */
     public static void selectValueFromDropdown(By locator, String value) {
         try {
@@ -233,6 +254,7 @@ public class DriverMethods {
 
     /**
      * Returns the selected option's text of the specified dropdown.
+     *
      * @param locator By locator of the dropdown
      * @return text of the selected option
      */
@@ -244,6 +266,7 @@ public class DriverMethods {
 
     /**
      * Returns all options of the specified dropdown
+     *
      * @param locator By locator of the dropdown
      * @return the list of option texts
      */
@@ -261,7 +284,8 @@ public class DriverMethods {
 
     /**
      * Returns the specified attribute of an element.
-     * @param locator By locator of the element
+     *
+     * @param locator   By locator of the element
      * @param attribute the attribute to be returned
      * @return value of the element's attribute
      */
@@ -271,6 +295,7 @@ public class DriverMethods {
 
     /**
      * Returns the text of an element.
+     *
      * @param locator By locator of the element
      * @return text of the element
      */
@@ -282,6 +307,7 @@ public class DriverMethods {
 
     /**
      * Returns the display status of an element.
+     *
      * @param locator By locator of the element
      * @return boolean value of the display status
      */
@@ -291,6 +317,7 @@ public class DriverMethods {
 
     /**
      * Returns the enabled status of an element.
+     *
      * @param locator By locator of the element
      * @return boolean value of the enabled status
      */
@@ -300,6 +327,7 @@ public class DriverMethods {
 
     /**
      * Returns the presence status of an element.
+     *
      * @param locator By locator of the element
      * @return boolean value of the presence status
      */
@@ -330,6 +358,7 @@ public class DriverMethods {
 
     /**
      * Captures screenshot of the page. The default capture area is the entire page.
+     *
      * @return the screenshot image as a byte array
      * @throws IOException when the output image cannot be created
      */
@@ -344,6 +373,7 @@ public class DriverMethods {
 
     /**
      * Captures screenshot of a specified element.
+     *
      * @param locator By locator of the element
      * @return the screenshot as a byte array
      * @throws IOException when the output image cannot be created
@@ -359,7 +389,8 @@ public class DriverMethods {
 
     /**
      * Attaches the screenshot to a Cucumber scenario.
-     * @param scenario the specified scenario to get extended with screenshot
+     *
+     * @param scenario   the specified scenario to get extended with screenshot
      * @param screenshot the image to attach
      */
     public static void addScreenshotToScenario(Scenario scenario, byte[] screenshot) {
@@ -387,8 +418,9 @@ public class DriverMethods {
 
     /**
      * Executes a specified Javascript script in the browser.
+     *
      * @param script script to be executed
-     * @param args script arguments
+     * @param args   script arguments
      * @return return value of the Javascript command
      */
     public static Object executeJavaScript(String script, Object... args) {
