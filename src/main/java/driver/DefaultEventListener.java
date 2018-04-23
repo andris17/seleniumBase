@@ -103,6 +103,7 @@ public class DefaultEventListener implements WebDriverEventListener {
 
     @Override
     public void beforeClickOn(WebElement webElement, WebDriver webDriver) {
+        DriverWaits.waitForElementToBeClickable(webElement);
         logger.debug(String.format("Clicking element: %s", webElement.toString()));
     }
 

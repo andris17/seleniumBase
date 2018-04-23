@@ -159,7 +159,6 @@ public class DriverManager {
                 .withTimeout(3, TimeUnit.SECONDS)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .ignoring(StaleElementReferenceException.class);
-
     }
 
     /**
