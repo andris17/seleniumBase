@@ -203,7 +203,7 @@ public class DriverManager {
      */
     protected static FluentWait<WebDriver> getDefaultWait() {
         return new FluentWait<>(getDriver())
-                .withTimeout(3, TimeUnit.SECONDS)
+                .withTimeout(DEFAULT_IMPLICIT_WAIT, TimeUnit.SECONDS)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .ignoring(StaleElementReferenceException.class);
     }
