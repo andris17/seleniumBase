@@ -52,7 +52,16 @@ public class DriverMethods {
     }
 
     /**
-     * Switches the active window to the specified browser tab.
+     * Returns the window handles of the browser.
+     *
+     * @return the set of window handles
+     */
+    public static Set<String> getTabs() {
+        return getDriver().getWindowHandles();
+    }
+
+    /**
+     * Switches the active window to the specified browser tab based on the title of the tab.
      *
      * @param windowTitle the title of the tab to switch to
      * @throws NoSuchWindowException when the tab is not found
@@ -68,6 +77,27 @@ public class DriverMethods {
         }
 
         String errorMessage = String.format("No window found with title: [%s]", windowTitle);
+        logger.error(errorMessage);
+        throw new NoSuchWindowException(errorMessage);
+    }
+
+    /**
+     * Switches the active window to the specified browser tab based on the desired window handle.
+     *
+     * @param windowHandler the handler of the tab to switch to
+     * @throws NoSuchWindowException when the tab is not found
+     */
+    public static void switchToWindowHandle(String windowHandler) throws NoSuchWindowException {
+        Set<String> windows = getDriver().getWindowHandles();
+
+        for (String window : windows) {
+            getDriver().switchTo().window(window);
+            if (windowHandler.equals(getDriver().getWindowHandle())) {
+                return;
+            }
+        }
+
+        String errorMessage = String.format("No window found with title: [%s]", windowHandler);
         logger.error(errorMessage);
         throw new NoSuchWindowException(errorMessage);
     }
