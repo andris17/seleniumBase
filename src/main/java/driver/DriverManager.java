@@ -70,14 +70,27 @@ public class DriverManager {
     }
 
     private static void initLocalDriver(BrowserType browserType) {
+        switch (browserType) {
+            case CHROME: {
+                initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
+                break;
+            }
+            case IE: {
+                initLocalDriver(browserType, BrowserOptions.getDefaultIEOptions());
+                break;
+            }
+        }
+    }
+
+    private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
         if (driver == null) {
             switch (browserType) {
                 case CHROME: {
-                    driver = new ChromeDriver(BrowserOptions.getDefaultChromeOptions());
+                    driver = new ChromeDriver(capabilities);
                     break;
                 }
                 case IE: {
-                    driver = new InternetExplorerDriver(BrowserOptions.getDefaultIEOptions());
+                    driver = new InternetExplorerDriver(capabilities);
                     break;
                 }
             }
@@ -85,14 +98,27 @@ public class DriverManager {
     }
 
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
+        switch (browserType) {
+            case CHROME: {
+                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+                break;
+            }
+            case IE: {
+                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultIEOptions());
+                break;
+            }
+        }
+    }
+
+    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
         if (driver == null) {
             switch (browserType) {
                 case CHROME: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), BrowserOptions.getDefaultChromeOptions());
+                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
                     break;
                 }
                 case IE: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), BrowserOptions.getDefaultIEOptions());
+                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
                     break;
                 }
             }
