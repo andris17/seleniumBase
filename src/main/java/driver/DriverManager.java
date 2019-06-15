@@ -242,12 +242,7 @@ public class DriverManager {
      * @throws NoSuchElementException when the element is not found
      */
     public static WebElement getElement(By locator) throws NoSuchElementException {
-        try {
-            return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
-        } catch (NoSuchElementException e) {
-            logger.error("Element is not found with locator: " + locator.toString() + ", NoSuchElementException is thrown!");
-            throw new NoSuchElementException("Element is not found with locator: " + locator.toString());
-        }
+        return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
     }
 
     /**
