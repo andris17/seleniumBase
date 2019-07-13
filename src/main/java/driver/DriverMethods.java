@@ -63,43 +63,26 @@ public class DriverMethods {
     /**
      * Switches the active window to the specified browser tab based on the title of the tab.
      *
-     * @param windowTitle the title of the tab to switch to
+     * @param windowHandleOrName the title or handler ID of the tab to switch to
      * @throws NoSuchWindowException when the tab is not found
      */
-    public static void switchToTab(String windowTitle) throws NoSuchWindowException {
+    public static void switchToTab(String windowHandleOrName) throws NoSuchWindowException {
         Set<String> windows = getDriver().getWindowHandles();
 
         for (String window : windows) {
             getDriver().switchTo().window(window);
-            if (getDriver().getTitle().contains(windowTitle)) {
+            if (isWindowFound(windowHandleOrName)) {
                 return;
             }
         }
 
-        String errorMessage = String.format("No window found with title: [%s]", windowTitle);
+        String errorMessage = String.format("No window found with title: [%s]", windowHandleOrName);
         logger.error(errorMessage);
         throw new NoSuchWindowException(errorMessage);
     }
 
-    /**
-     * Switches the active window to the specified browser tab based on the desired window handle.
-     *
-     * @param windowHandler the handler of the tab to switch to
-     * @throws NoSuchWindowException when the tab is not found
-     */
-    public static void switchToWindowHandle(String windowHandler) throws NoSuchWindowException {
-        Set<String> windows = getDriver().getWindowHandles();
-
-        for (String window : windows) {
-            getDriver().switchTo().window(window);
-            if (windowHandler.equals(getDriver().getWindowHandle())) {
-                return;
-            }
-        }
-
-        String errorMessage = String.format("No window found with title: [%s]", windowHandler);
-        logger.error(errorMessage);
-        throw new NoSuchWindowException(errorMessage);
+    private static boolean isWindowFound(String window) {
+        return window.equals(getDriver().getWindowHandle()) || getDriver().getTitle().contains(window);
     }
 
     /**
