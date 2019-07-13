@@ -190,7 +190,7 @@ public class DriverManager {
     }
 
     /**
-     * Register specifies event listener to the driver.
+     * Register specified event listener to the driver.
      *
      * @param listener an instance of the listener class
      */
@@ -202,12 +202,10 @@ public class DriverManager {
     }
 
     /**
-     * Un-register specifies event listener to the driver.
+     * Un-register specified event listener from the driver.
      */
-    public static void unRegisterEventHandler() {
-        if (driverWithEvents != null) {
-            driverWithEvents.quit();
-        }
+    public static void unRegisterEventHandler(WebDriverEventListener listener) {
+        driverWithEvents.unregister(listener);
     }
 
     /**
