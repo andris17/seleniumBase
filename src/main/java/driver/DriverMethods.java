@@ -210,7 +210,7 @@ public class DriverMethods {
      * @param locator By locator of the element
      * @param input   the specified text input
      */
-    public static void setText(By locator, String input) {
+    public static void clearAndSetText(By locator, String input) {
         clear(locator);
         getElement(locator).sendKeys(input);
     }
