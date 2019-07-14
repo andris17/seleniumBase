@@ -30,7 +30,6 @@ public class DriverManager {
     private static int DEFAULT_IMPLICIT_WAIT = 2;
 
     private static WebDriver driver;
-    private static EventFiringWebDriver driverWithEvents;
     private static BrowserParameters browserParameters;
     private static Logger logger = LogManager.getLogger(DriverManager.class);
 
@@ -171,15 +170,17 @@ public class DriverManager {
     public static void registerEventHandler(WebDriverEventListener listener) {
         whenDriverPresent();
 
-        driverWithEvents = new EventFiringWebDriver(driver);
+        EventFiringWebDriver driverWithEvents = new EventFiringWebDriver(driver);
         driverWithEvents.register(listener);
+
+        driver = driverWithEvents;
     }
 
     /**
      * Un-register specified event listener from the driver.
      */
     public static void unRegisterEventHandler(WebDriverEventListener listener) {
-        driverWithEvents.unregister(listener);
+        ((EventFiringWebDriver) driver).unregister(listener);
     }
 
     /**
@@ -188,9 +189,6 @@ public class DriverManager {
      * @return the active WebDriver instance
      */
     public static WebDriver getDriver() {
-        if (driverWithEvents != null) {
-            return driverWithEvents;
-        }
         return driver;
     }
 
