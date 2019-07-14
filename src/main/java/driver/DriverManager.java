@@ -31,35 +31,34 @@ public class DriverManager {
 
     private static WebDriver driver;
     private static EventFiringWebDriver driverWithEvents;
-
-    private static boolean closeBrowsers = false;
-    private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
+    private static BrowserParameters browserParameters;
     private static Logger logger = LogManager.getLogger(DriverManager.class);
 
     /**
      * Instantiates singleton WebDriver for the specified browser type.
      *
-     * @param browserType the browser type to be initialized
-     * @param gridHubUrl  the address of the selenium grid hub
+     * @param parameters the browser paramaters to be initialized
      */
-    public static void initDriver(BrowserType browserType, String... gridHubUrl) {
+    public static void initDriver(BrowserParameters parameters) {
         System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
 
-        if (closeBrowsers) {
-            closeBrowsers(browserType);
+        browserParameters = parameters;
+
+        if (parameters.isCloseBrowsersAtStart()) {
+            closeBrowsers(parameters.getBrowserType());
         }
 
         if (driver == null) {
-            if (gridHubUrl.length > 0) {
+            if (parameters.getGridHubUrl() != null) {
                 try {
-                    initRemoteDriver(browserType, gridHubUrl[0]);
+                    initRemoteDriver(parameters.getBrowserType(), parameters.getGridHubUrl());
                 } catch (MalformedURLException e) {
-                    logger.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
+                    logger.error(String.format("Grid Url is not properly formatted: %s", parameters.getGridHubUrl()));
                     System.exit(1);
                 }
             } else {
-                initLocalDriver(browserType);
+                initLocalDriver(parameters.getBrowserType());
             }
 
             driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
@@ -264,20 +263,12 @@ public class DriverManager {
         driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
     }
 
-    public static void setScreenshotMode(ScreenshotMode mode) {
-        screenshotMode = mode;
-    }
-
     public static ScreenshotMode getScreenshotMode() {
-        return screenshotMode;
+        return browserParameters.getScreenShotMode();
     }
 
     public static boolean isCloseBrowsers() {
-        return closeBrowsers;
-    }
-
-    public static void setCloseBrowsers(boolean status) {
-        closeBrowsers = status;
+        return browserParameters.isCloseBrowsersAtStart();
     }
 
     public static String getUrl() {
