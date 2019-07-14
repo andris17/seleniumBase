@@ -50,6 +50,11 @@ public class BrowserParameters {
         return this;
     }
 
+    public BrowserParameters setCapabilities(MutableCapabilities capabilities) {
+        this.capabilities = capabilities;
+        return this;
+    }
+
     public BrowserParameters setGridHubUrl(String gridHubUrl) {
         this.gridHubUrl = gridHubUrl;
         return this;

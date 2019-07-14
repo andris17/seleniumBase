@@ -49,16 +49,17 @@ public class DriverManager {
             closeBrowsers(parameters.getBrowserType());
         }
 
+        initBrowserCapabilities();
+
         if (driver == null) {
-            if (parameters.getGridHubUrl() != null) {
+            if (browserParameters.getGridHubUrl() != null) {
                 try {
-                    initRemoteDriver(parameters.getBrowserType(), parameters.getGridHubUrl());
+                    initRemoteDriver(browserParameters.getGridHubUrl(), browserParameters.getCapabilities());
                 } catch (MalformedURLException e) {
-                    logger.error(String.format("Grid Url is not properly formatted: %s", parameters.getGridHubUrl()));
-                    System.exit(1);
+                    logger.error(String.format("Grid Url is not properly formatted: %s", browserParameters.getGridHubUrl()));
                 }
             } else {
-                initLocalDriver(parameters.getBrowserType());
+                initLocalDriver(browserParameters.getBrowserType(), browserParameters.getCapabilities());
             }
 
             driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
@@ -68,60 +69,34 @@ public class DriverManager {
         }
     }
 
-    private static void initLocalDriver(BrowserType browserType) {
-        switch (browserType) {
+    private static void initBrowserCapabilities() {
+        switch (browserParameters.getBrowserType()) {
             case CHROME: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
+                browserParameters.setCapabilities(BrowserOptions.getDefaultChromeOptions());
                 break;
             }
             case IE: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultIEOptions());
+                browserParameters.setCapabilities(BrowserOptions.getDefaultIEOptions());
                 break;
             }
         }
     }
 
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
-        if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new ChromeDriver(capabilities);
-                    break;
-                }
-                case IE: {
-                    driver = new InternetExplorerDriver(capabilities);
-                    break;
-                }
-            }
-        }
-    }
-
-    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
         switch (browserType) {
             case CHROME: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+                driver = new ChromeDriver(capabilities);
                 break;
             }
             case IE: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultIEOptions());
+                driver = new InternetExplorerDriver(capabilities);
                 break;
             }
         }
     }
 
-    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
-        if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-                case IE: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-            }
-        }
+    private static void initRemoteDriver(String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
+        driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
     }
 
     /**
