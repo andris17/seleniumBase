@@ -178,13 +178,13 @@ public class DriverMethods {
     }
 
     /**
-     * Sends a specified key to the element.
+     * Sends specified keys to the element.
      *
-     * @param locator By locator of the element
-     * @param key     the specified key of type Keys
+     * @param locator    By locator of the element
+     * @param keysOrText the specified keys of type Keys or String
      */
-    public static void sendKey(By locator, Keys key) {
-        getElement(locator).sendKeys(key);
+    public static void sendKeys(By locator, String keysOrText) {
+        getElement(locator).sendKeys(keysOrText);
     }
 
     /**
@@ -195,7 +195,7 @@ public class DriverMethods {
      */
     public static void clearAndSetText(By locator, String input) {
         clear(locator);
-        getElement(locator).sendKeys(input);
+        sendKeys(locator, input);
     }
 
     /**
@@ -419,7 +419,6 @@ public class DriverMethods {
                 }
                 break;
             case ALL:
-                break;
             default:
                 writeScreenshotToScenario(scenario, screenshot);
         }
