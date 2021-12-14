@@ -15,7 +15,7 @@
         <failsafe.plugin.version>2.20.1</failsafe.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <cucumber.version>1.2.5</cucumber.version>
-        <log4j.version>2.11.0</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
     </properties>
     <build>
         <plugins>
