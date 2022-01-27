@@ -6,7 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
@@ -15,8 +19,8 @@ import org.openqa.selenium.support.ui.FluentWait;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Responsible for handling the WebDriver during the test run.<br>
@@ -27,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DriverManager {
 
-    private static int DEFAULT_IMPLICIT_WAIT = 2;
+    private static long DEFAULT_IMPLICIT_WAIT = 2;
 
     private static WebDriver driver;
     private static EventFiringWebDriver driverWithEvents;
@@ -59,7 +63,7 @@ public class DriverManager {
                 initLocalDriver(browserType);
             }
 
-            driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitSeconds()));
             driver.manage().window().maximize();
 
             deleteAllCookies();
@@ -83,11 +87,15 @@ public class DriverManager {
         if (driver == null) {
             switch (browserType) {
                 case CHROME: {
-                    driver = new ChromeDriver(capabilities);
+                    driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
                     break;
                 }
                 case IE: {
-                    driver = new InternetExplorerDriver(capabilities);
+                    driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
+                    break;
+                }
+                case FIREFOX: {
+                    driver = new FirefoxDriver(new FirefoxOptions().merge(capabilities));
                     break;
                 }
             }
@@ -97,28 +105,19 @@ public class DriverManager {
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
         switch (browserType) {
             case CHROME: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+                initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
                 break;
             }
             case IE: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultIEOptions());
+                initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultIEOptions());
                 break;
             }
         }
     }
 
-    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
+    private static void initRemoteDriver(String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
         if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-                case IE: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-            }
+            driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
         }
     }
 
@@ -226,8 +225,8 @@ public class DriverManager {
      */
     protected static FluentWait<WebDriver> getDefaultWait() {
         return new FluentWait<>(getDriver())
-                .withTimeout(DEFAULT_IMPLICIT_WAIT, TimeUnit.SECONDS)
-                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                .withTimeout(Duration.ofSeconds((DEFAULT_IMPLICIT_WAIT)))
+                .pollingEvery(Duration.ofMillis(100))
                 .ignoring(StaleElementReferenceException.class);
     }
 
@@ -252,7 +251,7 @@ public class DriverManager {
         return getDriver().findElements(locator);
     }
 
-    public static int getImplicitWaitSeconds() {
+    public static long getImplicitWaitSeconds() {
         return DEFAULT_IMPLICIT_WAIT;
     }
 
@@ -260,7 +259,7 @@ public class DriverManager {
         whenDriverPresent();
 
         DEFAULT_IMPLICIT_WAIT = amount;
-        driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitSeconds()));
     }
 
     public static void setScreenshotMode(ScreenshotMode mode) {
