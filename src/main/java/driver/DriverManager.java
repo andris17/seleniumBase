@@ -43,9 +43,6 @@ public class DriverManager {
      * @param gridHubUrl  the address of the selenium grid hub
      */
     public static void initDriver(BrowserType browserType, String... gridHubUrl) {
-        System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
-        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-
         if (closeBrowsers) {
             closeBrowsers(browserType);
         }
