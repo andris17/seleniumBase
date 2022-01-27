@@ -12,8 +12,8 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.io.IOException;
@@ -34,7 +34,6 @@ public class DriverManager {
     private static long DEFAULT_IMPLICIT_WAIT = 2;
 
     private static WebDriver driver;
-    private static EventFiringWebDriver driverWithEvents;
 
     private static boolean closeBrowsers = false;
     private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
@@ -190,20 +189,17 @@ public class DriverManager {
      *
      * @param listener an instance of the listener class
      */
-    public static void registerEventHandler(WebDriverEventListener listener) {
+    public static void registerEventHandler(WebDriverListener listener) {
         whenDriverPresent();
 
-        driverWithEvents = new EventFiringWebDriver(driver);
-        driverWithEvents.register(listener);
+        driver = new EventFiringDecorator(listener).decorate(driver);
     }
 
     /**
      * Un-register specifies event listener to the driver.
      */
     public static void unRegisterEventHandler() {
-        if (driverWithEvents != null) {
-            driverWithEvents.quit();
-        }
+        driver = new EventFiringDecorator().decorate(driver);
     }
 
     /**
@@ -212,9 +208,6 @@ public class DriverManager {
      * @return the active WebDriver instance
      */
     public static WebDriver getDriver() {
-        if (driverWithEvents != null) {
-            return driverWithEvents;
-        }
         return driver;
     }
 
