@@ -9,8 +9,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.openqa.selenium.support.events.WebDriverListener;
@@ -70,47 +68,28 @@ public class DriverManager {
     }
 
     private static void initLocalDriver(BrowserType browserType) {
-        switch (browserType) {
-            case CHROME: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
-                break;
-            }
-            case IE: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultIEOptions());
-                break;
-            }
+        if (BrowserType.EDGE.equals(browserType)) {
+            initLocalDriver(browserType, BrowserOptions.getDefaultEdgeOptions());
+        } else {
+            initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
         }
     }
 
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
         if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
-                    break;
-                }
-                case IE: {
-                    driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
-                    break;
-                }
-                case FIREFOX: {
-                    driver = new FirefoxDriver(new FirefoxOptions().merge(capabilities));
-                    break;
-                }
+            if (BrowserType.EDGE.equals(browserType)) {
+                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
+            } else {
+                driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
             }
         }
     }
 
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
-        switch (browserType) {
-            case CHROME: {
-                initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
-                break;
-            }
-            case IE: {
-                initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultIEOptions());
-                break;
-            }
+        if (BrowserType.EDGE.equals(browserType)) {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+        } else {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultEdgeOptions());
         }
     }
 
@@ -151,17 +130,12 @@ public class DriverManager {
      */
     public static void closeBrowsers(BrowserType browserType) {
         try {
-            switch (browserType) {
-                case CHROME: {
-                    Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
-                    Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
-                    break;
-                }
-                case IE: {
-                    Runtime.getRuntime().exec("taskkill /F /IM IEDriverServer.exe /T");
-                    break;
-                }
-                default:
+            if (BrowserType.EDGE.equals(browserType)) {
+                Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
+                Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
+            } else {
+                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
+
             }
         } catch (IOException e) {
             e.printStackTrace();
