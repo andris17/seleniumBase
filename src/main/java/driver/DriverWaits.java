@@ -1,13 +1,11 @@
 package driver;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import static driver.DriverManager.getDefaultWait;
-import static driver.DriverManager.getDriver;
+import static driver.DriverManager.*;
 
 /**
  * Class to manage different kind of waits.
@@ -21,8 +19,8 @@ public final class DriverWaits {
 
     /**
      * Waits for a specified amount of time.
-     * 
-     * @param amountInSeconds
+     *
+     * @param amountInSeconds The specified wait amount in seconds.
      */
     public static void waitForSeconds(Integer amountInSeconds) {
         try {
@@ -38,75 +36,144 @@ public final class DriverWaits {
      * Waits for an alert to appear.
      */
     public static void waitForAlertToAppear() {
-        getDefaultWait().until(ExpectedConditions.alertIsPresent());
+        waitForAlertToAppear(getImplicitWaitTimeout());
+    }
+
+
+    /**
+     * Waits for an alert to appear.
+     *
+     * @param timeout The timeout duration in seconds.
+     */
+    public static void waitForAlertToAppear(long timeout) {
+        getDefaultWait(timeout).until(ExpectedConditions.alertIsPresent());
     }
 
     /**
      * Waits for the specified element to appear.
-     * 
-     * @param locator
+     *
+     * @param locator The specified By locator.
      */
     public static void waitForElementToAppear(By locator) {
-        getDefaultWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
+        waitForElementToAppear(locator, getImplicitWaitTimeout());
+    }
+
+    /**
+     * Waits for the specified element to appear.
+     *
+     * @param locator The specified By locator.
+     * @param timeout The timeout duration in seconds.
+     */
+    public static void waitForElementToAppear(By locator, long timeout) {
+        getDefaultWait(timeout).until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     /**
      * Waits for the specified element to disappear.
      *
-     * @param locator
+     * @param locator The specified By locator.
      */
     public static void waitForElementToDisappear(By locator) {
-        getDefaultWait().until(ExpectedConditions.invisibilityOfElementLocated(locator));
+        waitForElementToDisappear(locator, getImplicitWaitTimeout());
+    }
+
+    /**
+     * Waits for the specified element to disappear.
+     *
+     * @param locator The specified By locator.
+     * @param timeout The timeout duration in seconds.
+     */
+    public static void waitForElementToDisappear(By locator, long timeout) {
+        getDefaultWait(timeout).until(ExpectedConditions.invisibilityOfElementLocated(locator));
     }
 
     /**
      * Waits for the specified element to contain the value in the attribute.
      *
-     * @param locator
-     * @param attribute
-     * @param value
+     * @param locator   The specified By locator.
+     * @param attribute The queried attribute's name.
+     * @param value     The queried attribute's value.
      */
     public static void waitForAttributeToContain(By locator, String attribute, String value) {
-        getDefaultWait().until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return driver.findElement(locator).getAttribute(attribute).contains(value);
-            }
+        waitForAttributeToContain(locator, attribute, value, getImplicitWaitTimeout());
+    }
+
+    /**
+     * Waits for the specified element to contain the value in the attribute.
+     *
+     * @param locator   The specified By locator.
+     * @param attribute The queried attribute's name.
+     * @param value     The queried attribute's value.
+     * @param timeout   The timeout duration in seconds.
+     */
+    public static void waitForAttributeToContain(By locator, String attribute, String value, long timeout) {
+        getDefaultWait(timeout).until((ExpectedCondition<Boolean>) driver -> {
+            assert driver != null;
+            return driver.findElement(locator).getAttribute(attribute).contains(value);
         });
     }
 
     /**
      * Waits for the specified element to not contain the value in the attribute.
      *
-     * @param locator
-     * @param attribute
-     * @param value
+     * @param locator   The specified By locator.
+     * @param attribute The queried attribute's name.
+     * @param value     The queried attribute's value.
      */
     public static void waitForAttributeNotToContain(By locator, String attribute, String value) {
-        getDefaultWait().until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return !driver.findElement(locator).getAttribute(attribute).contains(value);
-            }
+        waitForAttributeNotToContain(locator, attribute, value, getImplicitWaitTimeout());
+    }
+
+    /**
+     * Waits for the specified element to not contain the value in the attribute.
+     *
+     * @param locator   The specified By locator.
+     * @param attribute The queried attribute's name.
+     * @param value     The queried attribute's value.
+     * @param timeout   The timeout duration in seconds.
+     */
+    public static void waitForAttributeNotToContain(By locator, String attribute, String value, long timeout) {
+        getDefaultWait(timeout).until((ExpectedCondition<Boolean>) driver -> {
+            assert driver != null;
+            return !driver.findElement(locator).getAttribute(attribute).contains(value);
         });
     }
 
     /**
      * Waits for an element to be clickable.
      *
-     * @param locator
+     * @param locator The specified By locator.
      */
     public static void waitForElementToBeClickable(By locator) {
-        getDefaultWait().until(ExpectedConditions.elementToBeClickable(locator));
+        waitForElementToBeClickable(locator, getImplicitWaitTimeout());
     }
 
     /**
      * Waits for an element to be clickable.
      *
-     * @param element
+     * @param locator The specified By locator.
+     * @param timeout The timeout duration in seconds.
      */
-    public static void waitForElementToBeClickable(WebElement element) {
-        getDefaultWait().until(ExpectedConditions.elementToBeClickable(element));
+    public static void waitForElementToBeClickable(By locator, long timeout) {
+        getDefaultWait(timeout).until(ExpectedConditions.elementToBeClickable(locator));
     }
 
+    /**
+     * Waits for an element to be clickable.
+     *
+     * @param element The specified WebElement.
+     */
+    public static void waitForElementToBeClickable(WebElement element) {
+        waitForElementToBeClickable(element, getImplicitWaitTimeout());
+    }
+
+    /**
+     * Waits for an element to be clickable.
+     *
+     * @param element The specified WebElement.
+     * @param timeout The timeout duration in seconds.
+     */
+    public static void waitForElementToBeClickable(WebElement element, long timeout) {
+        getDefaultWait(timeout).until(ExpectedConditions.elementToBeClickable(element));
+    }
 }

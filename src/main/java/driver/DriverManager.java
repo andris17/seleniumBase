@@ -28,8 +28,7 @@ import java.util.List;
  * @author Andras Fuge
  */
 public class DriverManager {
-
-    private static long DEFAULT_IMPLICIT_WAIT = 2;
+    private static long implicitWaitTimeout = 0;
 
     private static WebDriver driver;
 
@@ -60,7 +59,7 @@ public class DriverManager {
                 initLocalDriver(browserType);
             }
 
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitSeconds()));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
             driver.manage().window().maximize();
 
             deleteAllCookies();
@@ -190,9 +189,9 @@ public class DriverManager {
      *
      * @return FluentWait with default parameters
      */
-    protected static FluentWait<WebDriver> getDefaultWait() {
+    protected static FluentWait<WebDriver> getDefaultWait(long implicitWaitTimeout) {
         return new FluentWait<>(getDriver())
-                .withTimeout(Duration.ofSeconds((DEFAULT_IMPLICIT_WAIT)))
+                .withTimeout(Duration.ofSeconds((implicitWaitTimeout)))
                 .pollingEvery(Duration.ofMillis(100))
                 .ignoring(StaleElementReferenceException.class);
     }
@@ -205,7 +204,7 @@ public class DriverManager {
      * @throws NoSuchElementException when the element is not found
      */
     public static WebElement getElement(By locator) throws NoSuchElementException {
-        return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
+        return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
     }
 
     /**
@@ -218,15 +217,15 @@ public class DriverManager {
         return getDriver().findElements(locator);
     }
 
-    public static long getImplicitWaitSeconds() {
-        return DEFAULT_IMPLICIT_WAIT;
+    public static long getImplicitWaitTimeout() {
+        return implicitWaitTimeout;
     }
 
-    public static void setImplicitWaitSeconds(int amount) {
+    public static void setImplicitWaitTimeout(int amount) {
         whenDriverPresent();
 
-        DEFAULT_IMPLICIT_WAIT = amount;
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitSeconds()));
+        implicitWaitTimeout = amount;
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
     }
 
     public static void setScreenshotMode(ScreenshotMode mode) {
