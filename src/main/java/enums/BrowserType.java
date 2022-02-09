@@ -6,5 +6,5 @@ package enums;
  * @author Andras Fuge
  */
 public enum BrowserType {
-    IE, CHROME
+    CHROME, EDGE
 }

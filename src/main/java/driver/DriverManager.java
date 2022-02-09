@@ -6,17 +6,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Responsible for handling the WebDriver during the test run.<br>
@@ -26,11 +28,9 @@ import java.util.concurrent.TimeUnit;
  * @author Andras Fuge
  */
 public class DriverManager {
-
-    private static int DEFAULT_IMPLICIT_WAIT = 2;
+    private static long implicitWaitTimeout = 0;
 
     private static WebDriver driver;
-    private static EventFiringWebDriver driverWithEvents;
 
     private static boolean closeBrowsers = false;
     private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
@@ -43,9 +43,6 @@ public class DriverManager {
      * @param gridHubUrl  the address of the selenium grid hub
      */
     public static void initDriver(BrowserType browserType, String... gridHubUrl) {
-        System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
-        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-
         if (closeBrowsers) {
             closeBrowsers(browserType);
         }
@@ -62,7 +59,7 @@ public class DriverManager {
                 initLocalDriver(browserType);
             }
 
-            driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
             driver.manage().window().maximize();
 
             deleteAllCookies();
@@ -70,58 +67,34 @@ public class DriverManager {
     }
 
     private static void initLocalDriver(BrowserType browserType) {
-        switch (browserType) {
-            case CHROME: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
-                break;
-            }
-            case IE: {
-                initLocalDriver(browserType, BrowserOptions.getDefaultIEOptions());
-                break;
-            }
+        if (BrowserType.EDGE.equals(browserType)) {
+            initLocalDriver(browserType, BrowserOptions.getDefaultEdgeOptions());
+        } else {
+            initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
         }
     }
 
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
         if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new ChromeDriver(capabilities);
-                    break;
-                }
-                case IE: {
-                    driver = new InternetExplorerDriver(capabilities);
-                    break;
-                }
+            if (BrowserType.EDGE.equals(browserType)) {
+                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
+            } else {
+                driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
             }
         }
     }
 
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
-        switch (browserType) {
-            case CHROME: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultChromeOptions());
-                break;
-            }
-            case IE: {
-                initRemoteDriver(browserType, gridHubUrl, BrowserOptions.getDefaultIEOptions());
-                break;
-            }
+        if (BrowserType.EDGE.equals(browserType)) {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+        } else {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultEdgeOptions());
         }
     }
 
-    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
+    private static void initRemoteDriver(String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
         if (driver == null) {
-            switch (browserType) {
-                case CHROME: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-                case IE: {
-                    driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-                    break;
-                }
-            }
+            driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
         }
     }
 
@@ -156,17 +129,12 @@ public class DriverManager {
      */
     public static void closeBrowsers(BrowserType browserType) {
         try {
-            switch (browserType) {
-                case CHROME: {
-                    Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
-                    Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
-                    break;
-                }
-                case IE: {
-                    Runtime.getRuntime().exec("taskkill /F /IM IEDriverServer.exe /T");
-                    break;
-                }
-                default:
+            if (BrowserType.EDGE.equals(browserType)) {
+                Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
+                Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
+            } else {
+                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -194,20 +162,17 @@ public class DriverManager {
      *
      * @param listener an instance of the listener class
      */
-    public static void registerEventHandler(WebDriverEventListener listener) {
+    public static void registerEventHandler(WebDriverListener listener) {
         whenDriverPresent();
 
-        driverWithEvents = new EventFiringWebDriver(driver);
-        driverWithEvents.register(listener);
+        driver = new EventFiringDecorator(listener).decorate(driver);
     }
 
     /**
      * Un-register specifies event listener to the driver.
      */
     public static void unRegisterEventHandler() {
-        if (driverWithEvents != null) {
-            driverWithEvents.quit();
-        }
+        driver = new EventFiringDecorator().decorate(driver);
     }
 
     /**
@@ -216,9 +181,6 @@ public class DriverManager {
      * @return the active WebDriver instance
      */
     public static WebDriver getDriver() {
-        if (driverWithEvents != null) {
-            return driverWithEvents;
-        }
         return driver;
     }
 
@@ -227,10 +189,10 @@ public class DriverManager {
      *
      * @return FluentWait with default parameters
      */
-    protected static FluentWait<WebDriver> getDefaultWait() {
+    protected static FluentWait<WebDriver> getDefaultWait(long implicitWaitTimeout) {
         return new FluentWait<>(getDriver())
-                .withTimeout(DEFAULT_IMPLICIT_WAIT, TimeUnit.SECONDS)
-                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                .withTimeout(Duration.ofSeconds((implicitWaitTimeout)))
+                .pollingEvery(Duration.ofMillis(100))
                 .ignoring(StaleElementReferenceException.class);
     }
 
@@ -242,7 +204,7 @@ public class DriverManager {
      * @throws NoSuchElementException when the element is not found
      */
     public static WebElement getElement(By locator) throws NoSuchElementException {
-        return getDefaultWait().until((getDriver) -> getDriver.findElement(locator));
+        return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
     }
 
     /**
@@ -255,15 +217,15 @@ public class DriverManager {
         return getDriver().findElements(locator);
     }
 
-    public static int getImplicitWaitSeconds() {
-        return DEFAULT_IMPLICIT_WAIT;
+    public static long getImplicitWaitTimeout() {
+        return implicitWaitTimeout;
     }
 
-    public static void setImplicitWaitSeconds(int amount) {
+    public static void setImplicitWaitTimeout(int amount) {
         whenDriverPresent();
 
-        DEFAULT_IMPLICIT_WAIT = amount;
-        driver.manage().timeouts().implicitlyWait(getImplicitWaitSeconds(), TimeUnit.SECONDS);
+        implicitWaitTimeout = amount;
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
     }
 
     public static void setScreenshotMode(ScreenshotMode mode) {

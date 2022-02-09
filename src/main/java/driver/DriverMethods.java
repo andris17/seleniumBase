@@ -2,11 +2,11 @@ package driver;
 
 import cucumber.api.Scenario;
 import enums.MouseEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.HasInputDevices;
-import org.openqa.selenium.interactions.Mouse;
-import org.openqa.selenium.interactions.internal.Locatable;
+import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.support.ui.Select;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
@@ -17,9 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static driver.DriverManager.getDriver;
 import static driver.DriverManager.getElement;
@@ -164,7 +161,7 @@ public class DriverMethods {
      * @see MouseEvent
      */
     public static void mouseAction(By locator, MouseEvent event) {
-        Mouse mouse = ((HasInputDevices) getDriver()).getMouse();
+        PointerInput mouse = new PointerInput(PointerInput.Kind.MOUSE, "Mouse");
         Actions actions = new Actions(getDriver());
         WebElement element = DriverManager.getElement(locator);
 
@@ -179,13 +176,13 @@ public class DriverMethods {
                 actions.contextClick(element).build().perform();
                 break;
             case MOUSE_UP:
-                mouse.mouseUp(((Locatable) (element)).getCoordinates());
+                actions.release();
                 break;
             case MOUSE_DOWN:
-                mouse.mouseDown(((Locatable) (element)).getCoordinates());
+                actions.clickAndHold(element);
                 break;
             case MOUSE_HOVER:
-                mouse.mouseMove(((Locatable) (element)).getCoordinates());
+                actions.moveToElement(element);
                 break;
             case MOUSE_TO_ORIGO:
                 actions.moveByOffset(-element.getLocation().getX(), -element.getLocation().getY());
