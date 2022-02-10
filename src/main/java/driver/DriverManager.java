@@ -204,7 +204,11 @@ public class DriverManager {
      * @throws NoSuchElementException when the element is not found
      */
     public static WebElement getElement(By locator) throws NoSuchElementException {
-        return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
+        try {
+            return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
+        } catch (StaleElementReferenceException e) {
+            return getElement(locator);
+        }
     }
 
     /**
@@ -214,7 +218,11 @@ public class DriverManager {
      * @return the located WebElements
      */
     public static List<WebElement> getElements(By locator) {
-        return getDriver().findElements(locator);
+        try {
+            return getDriver().findElements(locator);
+        } catch (StaleElementReferenceException e) {
+            return getElements(locator);
+        }
     }
 
     public static long getImplicitWaitTimeout() {
