@@ -77,18 +77,18 @@ public class DriverManager {
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
         if (driver == null) {
             if (BrowserType.EDGE.equals(browserType)) {
-                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
-            } else {
                 driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
+            } else {
+                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
             }
         }
     }
 
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
         if (BrowserType.EDGE.equals(browserType)) {
-            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
-        } else {
             initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultEdgeOptions());
+        } else {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
         }
     }
 
@@ -130,10 +130,10 @@ public class DriverManager {
     public static void closeBrowsers(BrowserType browserType) {
         try {
             if (BrowserType.EDGE.equals(browserType)) {
+                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
+            } else {
                 Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
                 Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
-            } else {
-                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
 
             }
         } catch (IOException e) {
