@@ -1,12 +1,9 @@
 package driver;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.util.function.Function;
 
 import static driver.DriverManager.*;
 
@@ -185,17 +182,17 @@ public final class DriverWaits {
      *
      * @param isTrue The specified ExpectedCondition to meet.
      */
-    public static <T> void waitForConditionToMeet(ExpectedCondition<T> isTrue){
+    public static <T> void waitForConditionToMeet(ExpectedCondition<T> isTrue) {
         waitForConditionToMeet(isTrue, getImplicitWaitTimeout());
     }
 
     /**
      * Waits for an ExpectedCondition to be true.
      *
-     * @param isTrue The specified ExpectedCondition to meet.
+     * @param isTrue  The specified ExpectedCondition to meet.
      * @param timeout The timeout duration in seconds.
      */
-    public static <T> void waitForConditionToMeet(ExpectedCondition<T> isTrue, long timeout){
+    public static <T> void waitForConditionToMeet(ExpectedCondition<T> isTrue, long timeout) {
         getDefaultWait(timeout).until(isTrue);
     }
 }
