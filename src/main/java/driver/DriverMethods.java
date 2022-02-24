@@ -1,7 +1,7 @@
 package driver;
 
-import cucumber.api.Scenario;
 import enums.MouseEvent;
+import io.cucumber.java.Scenario;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -440,7 +440,7 @@ public class DriverMethods {
     }
 
     private static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {
-        scenario.embed(screenshot, "image/png");
+        scenario.attach(screenshot, "image/png", "screenshot");
     }
 
     /**
