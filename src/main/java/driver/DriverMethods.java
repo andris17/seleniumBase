@@ -30,7 +30,7 @@ import static driver.DriverManager.getElement;
  */
 public class DriverMethods {
 
-    private static Logger logger = LogManager.getLogger(DriverMethods.class);
+    private static final Logger LOG = LogManager.getLogger(DriverMethods.class);
 
     /**
      * Navigates to the specified url.
@@ -74,7 +74,7 @@ public class DriverMethods {
         }
 
         String errorMessage = String.format("No window found with title: [%s]", windowTitle);
-        logger.error(errorMessage);
+        LOG.error(errorMessage);
         throw new NoSuchWindowException(errorMessage);
     }
 
@@ -95,7 +95,7 @@ public class DriverMethods {
         }
 
         String errorMessage = String.format("No window found with title: [%s]", windowHandler);
-        logger.error(errorMessage);
+        LOG.error(errorMessage);
         throw new NoSuchWindowException(errorMessage);
     }
 
@@ -403,15 +403,9 @@ public class DriverMethods {
      *
      * @param locator By locator of the element
      * @return the screenshot as a byte array
-     * @throws IOException when the output image cannot be created
      */
-    public static byte[] takeScreenShotOfElement(By locator) throws IOException {
-        ByteArrayOutputStream screenshot = new ByteArrayOutputStream();
-        ImageIO.write(new AShot().takeScreenshot(getDriver(), getElement(locator)).getImage(), "png", screenshot);
-
-        screenshot.flush();
-
-        return screenshot.toByteArray();
+    public static byte[] takeScreenShotOfElement(By locator) {
+        return getElement(locator).getScreenshotAs(OutputType.BYTES);
     }
 
     /**
@@ -421,22 +415,7 @@ public class DriverMethods {
      * @param screenshot the image to attach
      */
     public static void addScreenshotToScenario(Scenario scenario, byte[] screenshot) {
-        switch (DriverManager.getScreenshotMode()) {
-            case FAILED:
-                if (scenario.isFailed()) {
-                    writeScreenshotToScenario(scenario, screenshot);
-                }
-                break;
-            case PASSED:
-                if (!scenario.isFailed()) {
-                    writeScreenshotToScenario(scenario, screenshot);
-                }
-                break;
-            case ALL:
-                break;
-            default:
-                writeScreenshotToScenario(scenario, screenshot);
-        }
+        writeScreenshotToScenario(scenario, screenshot);
     }
 
     private static void writeScreenshotToScenario(Scenario scenario, byte[] screenshot) {

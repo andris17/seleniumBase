@@ -1,7 +1,6 @@
 package driver;
 
 import enums.BrowserType;
-import enums.ScreenshotMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -33,8 +32,7 @@ public class DriverManager {
     private static WebDriver driver;
 
     private static boolean closeBrowsers = false;
-    private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
-    private static Logger logger = LogManager.getLogger(DriverManager.class);
+    private static final Logger LOG = LogManager.getLogger(DriverManager.class);
 
     /**
      * Instantiates singleton WebDriver for the specified browser type.
@@ -52,7 +50,7 @@ public class DriverManager {
                 try {
                     initRemoteDriver(browserType, gridHubUrl[0]);
                 } catch (MalformedURLException e) {
-                    logger.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
+                    LOG.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
                     System.exit(1);
                 }
             } else {
@@ -105,7 +103,7 @@ public class DriverManager {
      */
     private static void whenDriverPresent() throws IllegalStateException {
         if (driver == null) {
-            logger.error("Driver is not present, IllegalStateException is thrown!");
+            LOG.error("Driver is not present, IllegalStateException is thrown!");
             throw new IllegalStateException("Driver is not present, it should be initialized first!");
         }
     }
@@ -234,14 +232,6 @@ public class DriverManager {
 
         implicitWaitTimeout = amount;
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
-    }
-
-    public static void setScreenshotMode(ScreenshotMode mode) {
-        screenshotMode = mode;
-    }
-
-    public static ScreenshotMode getScreenshotMode() {
-        return screenshotMode;
     }
 
     public static boolean isCloseBrowsers() {
