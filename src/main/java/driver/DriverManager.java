@@ -1,7 +1,6 @@
 package driver;
 
 import enums.BrowserType;
-import enums.ScreenshotMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -33,8 +32,7 @@ public class DriverManager {
     private static WebDriver driver;
 
     private static boolean closeBrowsers = false;
-    private static ScreenshotMode screenshotMode = ScreenshotMode.FAILED;
-    private static Logger logger = LogManager.getLogger(DriverManager.class);
+    private static final Logger LOG = LogManager.getLogger(DriverManager.class);
 
     /**
      * Instantiates singleton WebDriver for the specified browser type.
@@ -52,7 +50,7 @@ public class DriverManager {
                 try {
                     initRemoteDriver(browserType, gridHubUrl[0]);
                 } catch (MalformedURLException e) {
-                    logger.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
+                    LOG.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
                     System.exit(1);
                 }
             } else {
@@ -77,18 +75,18 @@ public class DriverManager {
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
         if (driver == null) {
             if (BrowserType.EDGE.equals(browserType)) {
-                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
-            } else {
                 driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
+            } else {
+                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
             }
         }
     }
 
     private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
         if (BrowserType.EDGE.equals(browserType)) {
-            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
-        } else {
             initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultEdgeOptions());
+        } else {
+            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
         }
     }
 
@@ -105,7 +103,7 @@ public class DriverManager {
      */
     private static void whenDriverPresent() throws IllegalStateException {
         if (driver == null) {
-            logger.error("Driver is not present, IllegalStateException is thrown!");
+            LOG.error("Driver is not present, IllegalStateException is thrown!");
             throw new IllegalStateException("Driver is not present, it should be initialized first!");
         }
     }
@@ -130,10 +128,10 @@ public class DriverManager {
     public static void closeBrowsers(BrowserType browserType) {
         try {
             if (BrowserType.EDGE.equals(browserType)) {
+                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
+            } else {
                 Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
                 Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
-            } else {
-                Runtime.getRuntime().exec("taskkill /F /IM msedgedriver.exe /T");
 
             }
         } catch (IOException e) {
@@ -204,7 +202,11 @@ public class DriverManager {
      * @throws NoSuchElementException when the element is not found
      */
     public static WebElement getElement(By locator) throws NoSuchElementException {
-        return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
+        try {
+            return getDefaultWait(getImplicitWaitTimeout()).until((getDriver) -> getDriver.findElement(locator));
+        } catch (StaleElementReferenceException e) {
+            return getElement(locator);
+        }
     }
 
     /**
@@ -214,7 +216,11 @@ public class DriverManager {
      * @return the located WebElements
      */
     public static List<WebElement> getElements(By locator) {
-        return getDriver().findElements(locator);
+        try {
+            return getDriver().findElements(locator);
+        } catch (StaleElementReferenceException e) {
+            return getElements(locator);
+        }
     }
 
     public static long getImplicitWaitTimeout() {
@@ -226,14 +232,6 @@ public class DriverManager {
 
         implicitWaitTimeout = amount;
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
-    }
-
-    public static void setScreenshotMode(ScreenshotMode mode) {
-        screenshotMode = mode;
-    }
-
-    public static ScreenshotMode getScreenshotMode() {
-        return screenshotMode;
     }
 
     public static boolean isCloseBrowsers() {
