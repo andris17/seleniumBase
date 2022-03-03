@@ -34,13 +34,31 @@ public class DriverManager {
     private static boolean closeBrowsers = false;
     private static final Logger LOG = LogManager.getLogger(DriverManager.class);
 
+
     /**
      * Instantiates singleton WebDriver for the specified browser type.
      *
-     * @param browserType the browser type to be initialized
-     * @param gridHubUrl  the address of the selenium grid hub
+     * @param browserType The browser type to be initialized.
+     * @param gridHubUrl  The address of the selenium grid hub.
      */
     public static void initDriver(BrowserType browserType, String... gridHubUrl) {
+        MutableCapabilities capabilities;
+        if (BrowserType.EDGE.equals(browserType)) {
+            capabilities = BrowserOptions.getDefaultEdgeOptions();
+        } else {
+            capabilities = BrowserOptions.getDefaultChromeOptions();
+        }
+        initDriver(browserType, capabilities, gridHubUrl);
+    }
+
+    /**
+     * Instantiates singleton WebDriver for the specified browser type.
+     *
+     * @param browserType  The browser type to be initialized.
+     * @param capabilities The capabilities the browser needs to be initialized with.
+     * @param gridHubUrl   The address of the selenium grid hub.
+     */
+    public static void initDriver(BrowserType browserType, MutableCapabilities capabilities, String... gridHubUrl) {
         if (closeBrowsers) {
             closeBrowsers(browserType);
         }
@@ -48,13 +66,13 @@ public class DriverManager {
         if (driver == null) {
             if (gridHubUrl.length > 0) {
                 try {
-                    initRemoteDriver(browserType, gridHubUrl[0]);
+                    initRemoteDriver(capabilities, gridHubUrl[0]);
                 } catch (MalformedURLException e) {
-                    LOG.error(String.format("Grid Url is not properly formatted: %s", gridHubUrl[0]));
+                    LOG.error(String.format("Grid hub url is not properly formatted: %s", gridHubUrl[0]));
                     System.exit(1);
                 }
             } else {
-                initLocalDriver(browserType);
+                initLocalDriver(browserType, capabilities);
             }
 
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getImplicitWaitTimeout()));
@@ -64,36 +82,16 @@ public class DriverManager {
         }
     }
 
-    private static void initLocalDriver(BrowserType browserType) {
-        if (BrowserType.EDGE.equals(browserType)) {
-            initLocalDriver(browserType, BrowserOptions.getDefaultEdgeOptions());
-        } else {
-            initLocalDriver(browserType, BrowserOptions.getDefaultChromeOptions());
-        }
-    }
-
     private static void initLocalDriver(BrowserType browserType, MutableCapabilities capabilities) {
-        if (driver == null) {
-            if (BrowserType.EDGE.equals(browserType)) {
-                driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
-            } else {
-                driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
-            }
-        }
-    }
-
-    private static void initRemoteDriver(BrowserType browserType, String gridHubUrl) throws MalformedURLException {
         if (BrowserType.EDGE.equals(browserType)) {
-            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultEdgeOptions());
+            driver = new EdgeDriver(new EdgeOptions().merge(capabilities));
         } else {
-            initRemoteDriver(gridHubUrl, BrowserOptions.getDefaultChromeOptions());
+            driver = new ChromeDriver(new ChromeOptions().merge(capabilities));
         }
     }
 
-    private static void initRemoteDriver(String gridHubUrl, MutableCapabilities capabilities) throws MalformedURLException {
-        if (driver == null) {
-            driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-        }
+    private static void initRemoteDriver(MutableCapabilities capabilities, String gridHubUrl) throws MalformedURLException {
+        driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
     }
 
     /**

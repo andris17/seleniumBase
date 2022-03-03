@@ -1,5 +1,6 @@
 package driver;
 
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 
@@ -19,8 +20,23 @@ class BrowserOptions {
      *
      * @return ChromeOptions
      */
-    static ChromeOptions getDefaultChromeOptions() {
+    public static ChromeOptions getDefaultChromeOptions() {
         ChromeOptions options = new ChromeOptions();
+
+        options.setCapability("enableVNC", true);
+        options.setCapability("enableVideo", true);
+
+        return options;
+    }
+
+    /**
+     * Returns default Edge browser options
+     * <p>
+     *
+     * @return EdgeOptions
+     */
+    public static EdgeOptions getDefaultEdgeOptions() {
+        EdgeOptions options = new EdgeOptions();
 
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("profile.default_content_settings.popus", 1);
@@ -34,22 +50,19 @@ class BrowserOptions {
     }
 
     /**
-     * Returns default Edge browser options
+     * Returns default Selenoid capabilities
      * <p>
      *
-     * @return EdgeOptions
+     * @return MutableCapabilities
      */
-    static EdgeOptions getDefaultEdgeOptions() {
-        EdgeOptions options = new EdgeOptions();
+    public static MutableCapabilities getSelenoidCapabilities() {
+        MutableCapabilities capabilities = new MutableCapabilities();
 
-        Map<String, Object> prefs = new HashMap<>();
-        prefs.put("profile.default_content_settings.popus", 1);
+        capabilities.setCapability("enableLog", true);
+        capabilities.setCapability("enableVideo", true);
+        capabilities.setCapability("enableVNC", true);
+        capabilities.setCapability("sessionTimeout", "30m");
 
-        options.setExperimentalOption("prefs", prefs);
-        options.addArguments("disable-infobars");
-        options.addArguments("start-maximized");
-        options.addArguments("test-type");
-
-        return options;
+        return capabilities;
     }
 }
