@@ -55,7 +55,7 @@ class BrowserOptions {
     }
 
     /**
-     * Returns default Selenoid capabilities
+     * Returns default Selenoid Video Recorder capabilities
      * <p>
      *
      * @return MutableCapabilities
