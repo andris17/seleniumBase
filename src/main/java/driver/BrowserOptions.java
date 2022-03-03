@@ -78,7 +78,6 @@ class BrowserOptions {
         MutableCapabilities capabilities = new MutableCapabilities();
 
         capabilities.setCapability("enableLog", true);
-        capabilities.setCapability("enableVideo", true);
         capabilities.setCapability("enableVNC", true);
         capabilities.setCapability("sessionTimeout", "30m");
 
