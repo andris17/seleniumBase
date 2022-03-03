@@ -23,8 +23,13 @@ class BrowserOptions {
     public static ChromeOptions getDefaultChromeOptions() {
         ChromeOptions options = new ChromeOptions();
 
-        options.setCapability("enableVNC", true);
-        options.setCapability("enableVideo", true);
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.default_content_settings.popus", 1);
+
+        options.setExperimentalOption("prefs", prefs);
+        options.addArguments("disable-infobars");
+        options.addArguments("start-maximized");
+        options.addArguments("test-type");
 
         return options;
     }
