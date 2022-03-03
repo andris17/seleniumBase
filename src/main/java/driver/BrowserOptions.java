@@ -60,6 +60,20 @@ class BrowserOptions {
      *
      * @return MutableCapabilities
      */
+    public static MutableCapabilities getSelenoidCapabilitiesWithVideo() {
+        MutableCapabilities capabilities = getSelenoidCapabilities();
+
+        capabilities.setCapability("enableVideo", true);
+
+        return capabilities;
+    }
+
+    /**
+     * Returns default Selenoid capabilities
+     * <p>
+     *
+     * @return MutableCapabilities
+     */
     public static MutableCapabilities getSelenoidCapabilities() {
         MutableCapabilities capabilities = new MutableCapabilities();
 
